@@ -637,9 +637,9 @@ Asteroids.Colours =
          ctx.fillStyle = ctx.strokeStyle = "white";
          var t = (BITMAPS ? Game.fillText : Game.drawText);
          t(ctx, "How to play...", "14pt Courier New", GameHandler.width/2 - 45, GameHandler.height/2);
-         t(ctx, "Destroy the asteroids to increase your score.", "14pt Courier New", GameHandler.width/2 - 245, GameHandler.height/2 + 30);
-         t(ctx, "Pickup the glowing power-ups to enhance your ship.", "14pt Courier New", GameHandler.width/2 - 245, GameHandler.height/2 + 60);
-         t(ctx, "Watch out for enemy saucers!", "14pt Courier New", GameHandler.width/2 - 245, GameHandler.height/2 + 90);
+         t(ctx, "Destroy the asteroids to increase your score.", "10pt Courier New", GameHandler.width/2 - 200, GameHandler.height/2 + 30);
+         t(ctx, "Pickup the glowing power-ups to enhance your ship.", "10pt Courier New", GameHandler.width/2 - 200, GameHandler.height/2 + 60);
+         t(ctx, "Watch out for enemy saucers!", "10pt Courier New", GameHandler.width/2 - 200, GameHandler.height/2 + 90);
          //t(ctx, "Press S to enable or display sound.", "14pt Courier New", 48, 410);
          //t(ctx, "Press R to switch between Modern and Retro graphics.", "14pt Courier New", 48, 430);
       },
@@ -1141,6 +1141,120 @@ Asteroids.Colours =
             interval.complete = true;
          }
       },
+      
+      /**
+       * Scene onTouchStart method
+       */
+      onTouchStart: function onTouchStart(touches, isStart){
+    	 // console.log(e);
+    	  
+    	  if(isStart){
+	    	  this.input.left = false;
+	    	  this.input.right = false;
+	    	  this.input.thrust = false;
+	    	  this.input.shield = false;
+	    	  this.input.fireA = false;
+	    	  this.input.fireB = false;
+    	  }
+    	  
+    	  if(touches.length === 0)
+    		  return true;
+    	  
+    	  for(var i=0, l=touches.length; i<l; i++){
+    		  
+    		  var e = touches[i];
+    	  
+	    	  var x = e.clientX, y=e.clientY;
+	    	  
+	    	  if(x>= joystickPos.minX && x<=joystickPos.maxX && y>=joystickPos.minY && y<=joystickPos.maxY){
+	    		  var angle = Math.atan2(joystickCenter.y - y, joystickCenter.x - x)/RAD;
+	        	  this.player.heading = Math.floor((angle-90)/8) * 8;
+	        	  this.player.vector.x = (x - joystickCenter.x)*this.player.MAX_PLAYER_VELOCITY/(joystickRadius*1.41);
+	        	  this.player.vector.y = (y - joystickCenter.y)*this.player.MAX_PLAYER_VELOCITY/(joystickRadius*1.41);
+	        	  this.player.engineThrust = true;
+	    	  }    	  
+	    	  
+	    	  /*if(x>=joystickUpPos.minX && x<=joystickUpPos.maxX && y>=joystickUpPos.minY && y<=joystickUpPos.maxY){
+	    		  //console.log('UP');
+	    		  this.input.thrust = true;
+	              return true;
+	    	  }
+	    	  else if(x>=joystickLeftPos.minX && x<=joystickLeftPos.maxX && y>=joystickLeftPos.minY && y<=joystickLeftPos.maxY){
+	    		  //console.log('Left');
+	    		  this.input.left = true;
+	              return true;
+	    	  }
+	    	  else if(x>=joystickRightPos.minX && x<=joystickRightPos.maxX && y>=joystickRightPos.minY && y<=joystickRightPos.maxY){
+	    		  //console.log('Right');
+	    		  this.input.right = true;
+	              return true;
+	    	  }*/
+	    	  else if(x>=joystickDownPos.minX && x<=joystickDownPos.maxX && y>=joystickDownPos.minY && y<=joystickDownPos.maxY){
+	    		  //console.log('Down');
+	    		  //not use for now
+	    		  //this.input.shield = true;
+	              //return true;
+	    		  
+	    	  }
+	    	  else if(x>=fireButtonPos.minX  && x<=fireButtonPos.maxX && y>=fireButtonPos.minY && y<=fireButtonPos.maxY){
+	    		  //console.log('Right');
+	    		  this.input.fireA = true;
+	              //return true;
+	    	  }
+	    	  else if(x>=bombButtonPos.minX  && x<=bombButtonPos.maxX && y>=bombButtonPos.minY && y<=bombButtonPos.maxY){    		  
+	    		  this.input.fireB = true;
+	              //return true;
+	    	  }
+	    	  else if(x>=shieldButtonPos.minX  && x<=shieldButtonPos.maxX && y>=shieldButtonPos.minY && y<=shieldButtonPos.maxY){    		  
+	    		  this.input.shield = true;
+	             // return true;
+	    	  }
+	    	  else if(x>=pauseButtonPos.minX  && x<=pauseButtonPos.maxX && y>=pauseButtonPos.minY && y<=pauseButtonPos.maxY){    		  
+	    		  GameHandler.pause();
+	              //return true;
+	    	  }
+	    	  else if(x>=opencheatButtonPos.minX  && x<=opencheatButtonPos.maxX && y>=opencheatButtonPos.minY && y<=opencheatButtonPos.maxY){    		  
+	    		  //open cheat menu
+	    		  cheatMenuOpened = !cheatMenuOpened;
+	              //return true;
+	    	  }
+	    	  
+	    	  else if(cheatMenuOpened && x>= cheatLPos.minX  && x<=cheatLPos.maxX && y>=cheatLPos.minY && y<=cheatLPos.maxY){
+	              this.skipLevel = true;
+	              //return true;
+	    	  }
+	    	  else if(cheatMenuOpened && x>= cheatRPos.minX  && x<=cheatRPos.maxX && y>=cheatRPos.minY && y<=cheatRPos.maxY){
+	    		  BITMAPS = !BITMAPS;
+	              //return true;
+	    	  }
+	    	  else if(cheatMenuOpened && x>= cheatAPos.minX  && x<=cheatAPos.maxX && y>=cheatAPos.minY && y<=cheatAPos.maxY){
+	    		  this.enemies.push(this.generateAsteroid(1.0));
+	              return true;
+	    	  }
+	    	  else if(cheatMenuOpened && x>= cheatEPos.minX  && x<=cheatEPos.maxX && y>=cheatEPos.minY && y<=cheatEPos.maxY){
+	    		  this.enemies.push(new Asteroids.EnemyShip(this, randomInt(0, 1)));
+	              //return true;
+	    	  }
+    	  }
+    	  return true;
+    	  
+      },
+      /**
+       * Scene onTouchEnd method
+       */
+      onTouchEnd: function onTouchEnd(e){
+    	  //console.log(e.touches);
+    	  this.input.left = false;
+    	  this.input.right = false;
+    	  this.input.thrust = false;
+    	  this.input.shield = false;
+    	  this.input.fireA = false;
+    	  this.input.fireB = false;
+    	  
+    	  return true;
+    	  
+      },
+      
       
       /**
        * Scene onKeyDownHandler method
