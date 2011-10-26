@@ -29,12 +29,7 @@
 var BITMAPS = true;
 var SOUND = false;
 var DEBUG = false;
-/*DEBUG =
-{
-   INVINCIBLE: false,
-   COLLISIONRADIUS: false,
-   FPS: false
-};*/
+
 var GLOWEFFECT = true;
 var GLOWSHADOWBLUR = 8;
 var SCOREDBKEY = "asteroids-score-1.1";
@@ -51,13 +46,119 @@ var g_enemyshipImg = new Image();
 
 
 // bind to window event
-window.addEventListener('load', onloadHandler, false);
+//window.addEventListener('load', onloadHandler, false);
+
+
+//PORT: device image
+//joystick
+var g_joystickImg = new Image();
+var joystickX = 0;
+var joystickY = 200;
+var joystickRadius = 48;
+var joystickPos = {minX:30, minY: 200, maxX:90, maxY:260};
+var joystickUpPos = {minX:30, minY: 200, maxX:90, maxY:260};
+var joystickLeftPos = {minX:0, minY: 230, maxX:60, maxY:290};
+var joystickRightPos = {minX:60, minY: 230, maxX:120, maxY:290};
+var joystickDownPos = {minX:30, minY: 260, maxX:90, maxY:320};
+
+
+//fire button
+var g_fireButtonImg = new Image();
+var fireButtonX = 130;
+var fireButtonY = 280;
+var fireButtonPos = {minX:130, minY: 280, maxX:170, maxY:320};
+
+//bomb button
+var g_bombButtonImg = new Image();
+var bombButtonX = 175;
+var bombButtonY = 280;
+var bombButtonPos = {minX:175, minY: 280, maxX:215, maxY:320};
+
+//shield button
+var g_shieldButtonImg = new Image();
+var shieldButtonX = 120;
+var shieldButtonY = 280;
+var shieldButtonPos = {minX:220, minY: 280, maxX:260, maxY:320};
+
+//pause button
+var g_pauseButtonImg = new Image();
+var pauseButtonX = 170;
+var pauseButtonY = 280;
+var pauseButtonPos = {minX:220, minY: 280, maxX:260, maxY:320};
+
+//cheat button
+var g_opencheatButtonImg = new Image();
+var g_closecheatButtonImg = new Image();
+var opencheatButtonX = 220;
+var opencheatButtonY = 280;
+var opencheatButtonPos = {minX:220, minY: 280, maxX:260, maxY:320};
+var cheatMenuOpened = false;
+
+var g_cheatMenuImg = new Image();
+var cheatMenuX = 70;
+var cheatMenuY = 280;
+var cheatLPos = {minX:220, minY: 280, maxX:260, maxY:320};
+var cheatRPos = {minX:220, minY: 280, maxX:260, maxY:320};
+var cheatAPos = {minX:220, minY: 280, maxX:260, maxY:320};
+var cheatEPos = {minX:220, minY: 280, maxX:260, maxY:320};
+
+//logo
+var g_logoImg = new Image();
+
+
+//PORT : recalc buttons pos based on canvas size
+function reCalculateSize(){
+	var w =  canvas.width, h = canvas.height;
+	joystickY = h - 100;
+	
+	joystickUpPos = {minX:24, minY: joystickY, maxX:72, maxY:joystickY + 48};
+	joystickLeftPos = {minX:0, minY: joystickY+24, maxX:48, maxY:joystickY+72};
+	joystickRightPos = {minX:48, minY: joystickY, maxX:96, maxY:joystickY + 72};
+	joystickDownPos = {minX:24, minY: joystickY + 48, maxX:72, maxY:joystickY + 96};
+	
+	joystickCenter = {x: joystickX+48, y: joystickY+48};
+	
+	joystickPos = {minX:joystickX, minY: joystickY, maxX:joystickX+96, maxY:joystickY+96};
+	
+	fireButtonX = w - 45;
+	fireButtonY = h - 40;
+	fireButtonPos = {minX:fireButtonX, minY: fireButtonY, maxX:fireButtonX+40, maxY:fireButtonY + 40};
+	
+	bombButtonX = w - 95
+	bombButtonY = h - 40;
+	bombButtonPos = {minX:bombButtonX, minY: bombButtonY, maxX:bombButtonX+40, maxY:bombButtonY + 40};
+	
+	shieldButtonY = h - 40;
+	shieldButtonPos = {minX:120, minY: shieldButtonY, maxX:160, maxY:shieldButtonY + 40};
+		
+	pauseButtonY = h - 40;
+	pauseButtonPos = {minX:pauseButtonX, minY: pauseButtonY, maxX:pauseButtonX + 40, maxY: pauseButtonY + 40};
+	
+	opencheatButtonX = w - 45;
+	opencheatButtonY = 20;
+	opencheatButtonPos = {minX:opencheatButtonX, minY: opencheatButtonY, maxX:opencheatButtonX+40, maxY:opencheatButtonY+40};
+	
+	cheatMenuX = w - 45;
+	cheatMenuY = 70;
+	
+	cheatLPos = {minX:cheatMenuX, minY: cheatMenuY, maxX:cheatMenuX+36, maxY:cheatMenuY+40};
+	cheatRPos = {minX:cheatMenuX, minY: cheatMenuY+41, maxX:cheatMenuX+36, maxY:cheatMenuY+82};
+	cheatAPos = {minX:cheatMenuX, minY: cheatMenuY+83, maxX:cheatMenuX+36, maxY:cheatMenuY+123};
+	cheatEPos = {minX:cheatMenuX, minY: cheatMenuY+124, maxX:cheatMenuX+36, maxY:cheatMenuY+165};
+}
+
+
+
+
 
 /**
  * Global window onload handler
  */
 function onloadHandler()
 {
+	//PORT : recalc size
+	reCalculateSize();
+	
    if (!soundManagerLoaded)
    {
       setTimeout(onloadHandler, 100);
@@ -193,6 +294,17 @@ Asteroids.Colours =
       loader.addImage(g_shieldImg, 'images/shield.png');
       loader.addImage(g_enemyshipImg, 'images/enemyship1.png');
       
+      //PORT:image
+      loader.addImage(g_joystickImg, 'images/vjoystick.png');
+      loader.addImage(g_fireButtonImg, 'images/fire.png');
+      loader.addImage(g_bombButtonImg, 'images/bomb.png');
+      loader.addImage(g_shieldButtonImg, 'images/shield_button.png');
+      loader.addImage(g_pauseButtonImg, 'images/pause.png');
+      loader.addImage(g_opencheatButtonImg, 'images/cheat.png');
+      loader.addImage(g_closecheatButtonImg, 'images/close-cheat.png');
+      loader.addImage(g_cheatMenuImg, 'images/cheats.png');
+      loader.addImage(g_logoImg, 'images/rewire-logo.png');
+      
       // the attactor scene is displayed first and responsible for allowing the
       // player to start the game once all images have been loaded
       loader.onLoadCallback(function() {
@@ -285,6 +397,8 @@ Asteroids.Colours =
          {
             // draw a scrolling background image
             ctx.drawImage(g_backgroundImg, this.backgroundX, 0, GameHandler.width, GameHandler.height, 0, 0, GameHandler.width, GameHandler.height);
+        	// ctx.drawImage(g_backgroundImg, this.backgroundX, 0, GameHandler.width, 300, 0, 0, GameHandler.width,300);
+        	 
             this.backgroundX += (0.25 * GameHandler.frameMultipler);
             if (this.backgroundX >= g_backgroundImg.width * 0.5)
             {
@@ -499,35 +613,50 @@ Asteroids.Colours =
       
       sceneRendererWelcome: function sceneRendererWelcome(ctx)
       {
+    	  //PORT
          ctx.fillStyle = ctx.strokeStyle = "white";
          var t = (BITMAPS ? Game.centerFillText : Game.centerDrawText);
-         t(ctx, "Press SPACE or click to start", "18pt Courier New", GameHandler.height*0.5);
+         //t(ctx, "Press SPACE or click to start", "18pt Courier New", GameHandler.height*0.5);
+         
+         t(ctx, "TAP to continue", "14pt Courier New", GameHandler.height*0.5);
+         
+         //t(ctx, "TAP to continue", "10pt Courier New", GameHandler.width/2 - 70, GameHandler.height/2, "white");
+         
+         t(ctx, "Original game by Kevin Roast", "15pt Courier New", GameHandler.height-50);
+         
+         var k = (BITMAPS ? Game.fillText : Game.drawText);
+         
+         k(ctx, "Powered for Touch by", "15pt Courier New", GameHandler.width/2-180, GameHandler.height-20);
+         
+         ctx.drawImage(g_logoImg , GameHandler.width/2 + 45, GameHandler.height-69);
       },
       
       sceneRendererInfo: function sceneRendererInfo(ctx)
       {
+    	  //PORT
          ctx.fillStyle = ctx.strokeStyle = "white";
          var t = (BITMAPS ? Game.fillText : Game.drawText);
-         t(ctx, "How to play...", "14pt Courier New", 48, 320);
-         t(ctx, "Destroy the asteroids to increase your score.", "14pt Courier New", 48, 350);
-         t(ctx, "Pickup the glowing power-ups to enhance your ship.", "14pt Courier New", 48, 370);
-         t(ctx, "Watch out for enemy saucers!", "14pt Courier New", 48, 390);
-         t(ctx, "Press S to enable or display sound.", "14pt Courier New", 48, 410);
-         t(ctx, "Press R to switch between Modern and Retro graphics.", "14pt Courier New", 48, 430);
+         t(ctx, "How to play...", "14pt Courier New", GameHandler.width/2 - 45, GameHandler.height/2);
+         t(ctx, "Destroy the asteroids to increase your score.", "14pt Courier New", GameHandler.width/2 - 245, GameHandler.height/2 + 30);
+         t(ctx, "Pickup the glowing power-ups to enhance your ship.", "14pt Courier New", GameHandler.width/2 - 245, GameHandler.height/2 + 60);
+         t(ctx, "Watch out for enemy saucers!", "14pt Courier New", GameHandler.width/2 - 245, GameHandler.height/2 + 90);
+         //t(ctx, "Press S to enable or display sound.", "14pt Courier New", 48, 410);
+         //t(ctx, "Press R to switch between Modern and Retro graphics.", "14pt Courier New", 48, 430);
       },
       
       sceneRendererScores: function sceneRendererScores(ctx)
       {
+    	  //PORT
          ctx.fillStyle = ctx.strokeStyle = "white";
          var t = (BITMAPS ? Game.centerFillText : Game.centerDrawText);
-         t(ctx, "High Score", "18pt Courier New", 320);
+         t(ctx, "High Score", "18pt Courier New", GameHandler.height-50);
          var sscore = this.game.highscore.toString();
          // pad with zeros
          for (var i=0, j=8-sscore.length; i<j; i++)
          {
             sscore = "0" + sscore;
          }
-         t(ctx, sscore, "18pt Courier New", 350);
+         t(ctx, sscore, "18pt Courier New", GameHandler.height-20);
       },
       
       /**
@@ -562,6 +691,16 @@ Asteroids.Colours =
             f(ctx, txt[i], "36pt Courier New", x + i*30, y, "white");
          }
          this.sine += 0.075;
+      },
+      
+      //PORT : TAP to play game
+      onTouchStart: function(e){
+    	  
+    	  if (this.imagesLoaded)
+          {
+             this.start = true;
+          }
+          return true;
       },
       
       onKeyDownHandler: function onKeyDownHandler(keyCode)
@@ -720,6 +859,10 @@ Asteroids.Colours =
          {
             interval.complete = true;
          }
+      },
+      //PORT
+      onTouchStart: function onTouchStart(e){
+    	  
       }
    });
 })();
@@ -1648,6 +1791,22 @@ Asteroids.Colours =
             if (BITMAPS)
             {
                ctx.drawImage(g_playerImg, 0, 0, 64, 64, 350+(i*20), 0, 16, 16);
+               
+             //PORT: draw images
+               ctx.drawImage(g_joystickImg, joystickX, joystickY);
+               ctx.drawImage(g_fireButtonImg, fireButtonX, fireButtonY);
+               ctx.drawImage(g_bombButtonImg, bombButtonX, bombButtonY);
+               ctx.drawImage(g_shieldButtonImg, shieldButtonX, shieldButtonY);
+               ctx.drawImage(g_pauseButtonImg, pauseButtonX, pauseButtonY);
+               
+               if(cheatMenuOpened){
+            	   ctx.drawImage(g_opencheatButtonImg, opencheatButtonX, opencheatButtonY);
+            	   ctx.drawImage(g_cheatMenuImg, cheatMenuX, cheatMenuY);
+               }
+               else{
+            	   ctx.drawImage(g_closecheatButtonImg, opencheatButtonX, opencheatButtonY);
+               }
+               
             }
             else
             {
@@ -1661,6 +1820,20 @@ Asteroids.Colours =
                ctx.closePath();
                ctx.stroke();
                ctx.restore();
+               
+             //PORT: draw images
+               ctx.drawImage(g_joystickImg, joystickX, joystickY);
+               ctx.drawImage(g_fireButtonImg, fireButtonX, fireButtonY);
+               ctx.drawImage(g_bombButtonImg, bombButtonX, bombButtonY);
+               ctx.drawImage(g_shieldButtonImg, shieldButtonX, shieldButtonY);
+               ctx.drawImage(g_pauseButtonImg, pauseButtonX, pauseButtonY);
+               
+               if(cheatMenuOpened){
+            	   ctx.drawImage(g_closecheatButtonImg, opencheatButtonX, opencheatButtonY);
+            	   ctx.drawImage(g_cheatMenuImg, cheatMenuX, cheatMenuY);
+               }
+               else
+            	   ctx.drawImage(g_opencheatButtonImg, opencheatButtonX, opencheatButtonY);
             }
          }
          

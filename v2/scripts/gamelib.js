@@ -82,8 +82,12 @@ var GameHandler =
    init: function()
    {
       this.canvas = document.getElementById('canvas');
-      this.width = this.canvas.height;
-      this.height = this.canvas.width;
+      //PORT : Fix bug
+      /*this.width = this.canvas.height;
+      this.height = this.canvas.width;*/
+      
+      this.width = this.canvas.width;
+      this.height = this.canvas.height;
    },
    
    /**

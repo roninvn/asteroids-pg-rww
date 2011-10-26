@@ -21,6 +21,9 @@
 	});
 	soundManager.url = 'swf/';
 </script>
+
+<script type="text/javascript" src="scripts/lib/xui-2.2.0.min.js"></script>
+
 <script src="scripts/mathlib.js"></script>
 <script src="scripts/gamelib.js"></script>
 <script src="scripts/asteroids_main.js"></script>
@@ -36,17 +39,52 @@
 		FPS : true
 	};
 </script>
+
 <style type="text/css">
-canvas {
-	background-color: #000;
-	border: 1px solid #888;
+html,body {
+	width: 99%;
+	height: 99%;
+	margin: 0px;
 }
 </style>
+
 </head>
-<body>
-	<div class="wrapper">
-		<canvas class="box-shadow" id="canvas" width="640" height="640"></canvas>
-	</div>
-	</div>
+<body style="background-color: #000000">
+	<canvas id="canvas" width="640" height = "640"></canvas>
 </body>
+<script>
+
+	var resizeFlag = false;
+	var canvas = document.getElementById('canvas');
+
+	window.addEventListener("resize", function(e) {//capture window resize event			
+		if (resizeFlag !== false)
+			clearTimeout(resizeFlag);
+		resizeFlag = setTimeout(doResize, 100);
+	});
+
+	var setCanvasSize = function() {		
+		x$('body').getStyle("height", function(h) {			
+			x$('#canvas').attr("height", h.replace('px',''));
+		});
+
+		x$('body').getStyle("width", function(w) {			
+			x$('#canvas').attr("width", w.replace('px',''));
+		});
+	};
+
+	var doResize = function() {		
+		setCanvasSize();
+		reCalculateSize();
+
+		GameHandler.width = canvas.width;
+		GameHandler.height = canvas.height;
+
+		if (GameHandler.paused)
+			GameHandler.pause();		
+	};
+
+	setCanvasSize();
+	onloadHandler();
+</script>
 </html>
