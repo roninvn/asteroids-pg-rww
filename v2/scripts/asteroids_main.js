@@ -27,7 +27,7 @@
 
 // Globals
 var BITMAPS = true;
-var SOUND = false;
+var SOUND = true;
 var DEBUG = false;
 
 var GLOWEFFECT = true;
